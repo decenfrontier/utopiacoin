@@ -1,15 +1,17 @@
 const sha256 = require('crypto-js/sha256')
+const TX = require('./transaction')
 
 class Block {
-    constructor(data, previousHash = '') {
-        this.data = data
+    constructor(transactions, previousHash = '') {
+        this.transactions = transactions
         this.previousHash = previousHash
         this.hash = this.computeHash()
+        this.timestamp = Date.now()
         this.nonce = 1
     }
 
     computeHash() {
-        return sha256(this.data + this.previousHash + this.nonce).toString()
+        return sha256(JSON.stringify(this.transactions) + this.previousHash + this.nonce + this.timestamp).toString()
     }
 
     mine(difficulty) {
@@ -24,7 +26,9 @@ class Block {
 class Chain {
     constructor() {
         this.chain = [this.genesis()]
-        this.difficulty = 5
+        this.difficulty = 4
+        this.transactionPool = []
+        this.minerReward = 50
     }
 
     genesis() {
@@ -59,6 +63,22 @@ class Chain {
             }
         }
         return true
+    }
+
+    mineTransactionPool(minerAddress) {
+        // Pack the miner rewards into the trading pool first
+        var rewardTxn = new TX.Transaction('', minerAddress, this.minerReward);
+        this.transactionPool.push(rewardTxn);
+        // mine
+        const newblock = new Block(this.transactionPool, this.getlatestBlock().hash);
+        newblock.mine(this.difficulty);
+        // append to chain
+        this.chain.push(newblock)
+        this.transactionPool = []
+    }
+
+    addTxnIntoPool(txn) {
+        this.transactionPool.push(txn)
     }
 }
 

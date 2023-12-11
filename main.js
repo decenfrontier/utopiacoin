@@ -1,18 +1,16 @@
-var BC = require('./blockchain.js');
+const BC = require('./blockchain.js');
+const TX = require('./transaction.js');
+
 
 function main() {
     const utopia = new BC.Chain()
+    const t1 = new TX.Transaction('addr1', 'addr2', 1000)
+    const t2 = new TX.Transaction('addr2', 'addr3', 500)
+    utopia.addTxnIntoPool(t1)
+    utopia.addTxnIntoPool(t2)
+    utopia.mineTransactionPool('addr3')
     console.log(utopia)
-
-    const block1 = new BC.Block('A transfer to B $1000')
-    utopia.appendBlock(block1)
-    const block2 = new BC.Block('B transfer to C $500')
-    utopia.appendBlock(block2)
-    console.log(utopia)
-    console.log("validate result1:", utopia.validateChain())
-    // falsify the chain
-    // utopia.chain[1].data = 'B transfer to C $800'
-    // console.log("validate result2:", utopia.validateChain())
+    console.log(utopia.getlatestBlock().transactions)
 }
 
 main()
