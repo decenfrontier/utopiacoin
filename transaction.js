@@ -1,7 +1,7 @@
 const sha256 = require("crypto-js/sha256")
 const ecLib = require("elliptic")
 
-const ec =  new ecLib.ec("secp256k1")
+const ec = new ecLib.ec("secp256k1")
 
 class Transaction {
   constructor(from, to, amount) {
@@ -21,6 +21,9 @@ class Transaction {
   }
   // 把交易的签名用from公钥进行解密，然后将解密后的结果与给定的哈希值进行比较
   isValid() {
+    if (this.from === "") {
+      return true
+    }
     const fromKeyPair = ec.keyFromPublic(this.from, "hex") // 这里为了简单, 认定地址就是公钥
     return fromKeyPair.verify(this.computeHash(), this.signature)
   }

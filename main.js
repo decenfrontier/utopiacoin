@@ -18,11 +18,11 @@ function main() {
     t1.sign(keyPair1)
     console.log(t1.isValid())
     
-    // utopia.addTxnIntoPool(t1)
-    // utopia.addTxnIntoPool(t2)
-    // utopia.mineTransactionPool('addr3')
-    // console.log(utopia)
-    // console.log(utopia.getlatestBlock().transactions)
+    utopia.addTxnIntoPool(t1)
+    utopia.addTxnIntoPool(t2)
+    utopia.mineTransactionPool('addr3')
+    console.log(utopia)
+    console.log(utopia.getlatestBlock().transactions)
 }
 
 main()

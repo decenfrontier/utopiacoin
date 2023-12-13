@@ -78,6 +78,10 @@ class Chain {
     }
 
     addTxnIntoPool(txn) {
+        if (!txn.isValid()) {
+            throw Error('Invalid transaction')
+        }
+        console.log(`Txn ${txn.from} -> ${txn.to}:${txn.amount} added into pool`)
         this.transactionPool.push(txn)
     }
 }
