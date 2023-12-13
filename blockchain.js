@@ -15,11 +15,24 @@ class Block {
     }
 
     mine(difficulty) {
+        if (!this.validateBlockTxns()) {
+            throw Error('Found invalid transaction, mine failed')
+        }
         while (!this.hash.startsWith("0".repeat(difficulty))) {
             this.nonce++
             this.hash = this.computeHash()
         }
         console.log(`Block mined: ${this.hash}, Nonce: ${this.nonce}`)
+    }
+
+    validateBlockTxns() {
+        for (let i = 0; i < this.transactions.length; i++) {
+            if (!this.transactions[i].isValid()) {
+                console.log(`Txn ${i} is invalid`)
+                return false
+            }
+        }
+        return true
     }
 }
 
@@ -53,12 +66,16 @@ class Chain {
         for (let i = 1; i < this.chain.length; i++) {
             const currentBlock = this.chain[i]
             if (currentBlock.hash !== currentBlock.computeHash()) {
-                console.log(`block${i} validate error`)
+                console.log(`[validateChain]  block${i} validate error`)
                 return false
             }
             const previousBlock = this.chain[i - 1]
             if (currentBlock.previousHash !== previousBlock.hash) {
-                console.log(`block${i - 1}-block${i} was broken`)
+                console.log(`[validateChain] block${i - 1}-block${i} was broken`)
+                return false
+            }
+            if (!currentBlock.validateBlockTxns()) {
+                console.log(`[validateChain] block${i} validate error`)
                 return false
             }
         }
